@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="styles.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Weather App</title>
+</head>
+<body>
+    <div class="container my-5 title"><h1>Choose your location to get Weather information</h1></div>
+    
+    <div class="container form">
+        <form action="/submit-location" method="POST" class=" d-flex">
+            <label for="region">Region:</label>
+            <select id="region" name="region" onchange="updatePrefectures()">
+                <option value="">Select a region</option>
+                <option value="hokkaido">Hokkaido</option>
+                <option value="tohoku">Tohoku</option>
+                <option value="kanto">Kanto</option>
+                <option value="chubu">Chubu</option>
+                <option value="kinki">Kinki (Kansai)</option>
+                <option value="chugoku">Chugoku</option>
+                <option value="shikoku">Shikoku</option>
+                <option value="kyushu">Kyushu & Okinawa</option>
+            </select>
+
+            <label for="prefecture">Prefecture:</label>
+            <select id="prefecture" name="prefecture" onchange="updateCities()" disabled>
+                <option value="">Select a region first</option>
+            </select>
+
+            <label for="city">City:</label>
+            <select id="city" name="city" disabled>
+                <option value="">Select a prefecture first</option>
+            </select>
+            <br><br>
+            <button type="submit">View weather</button>
+        </form>
+    </div>
+    <h1 class="title py-5">Weather conditions</h1>
+    <div class="container weather-display py-5">
+        <% if (locals.city) { %>
+            <div class="today-box weather-box">
+                <h4><%= dayName %>, <%= day %></h4>
+                <h3><%= city %></h3>
+                <h1><%= tempTd %>°</h1>
+                <br/>
+                <h4><%= weatherToday %></h4>
+            </div>
+            <div class="tomorrow-box weather-box">
+                <h4><%= dayNameTmrw %>, <%= dayTmrw %> </h4>
+                <h3><%= city %></h3>
+                <h1><%= tempTmrw %>°</h1>
+                <br/>
+                <h4><%= weatherTomorrow %></h4>
+            </div>
+        <% } else { %>
+            <p>Choose a city</p>
+        <% } %>
+    </div>
+    <div class="footer">
+        <p></p>
+    </div>
+
+
+    <script>
+        const prefecturesByRegion = {
+            hokkaido: { hokkaido: "Hokkaido" },
+            tohoku: {
+                aomori: "Aomori", iwate: "Iwate", miyagi: "Miyagi",
+                akita: "Akita", yamagata: "Yamagata", fukushima: "Fukushima"
+            },
+            kanto: {
+                ibaraki: "Ibaraki", tochigi: "Tochigi", gunma: "Gunma",
+                saitama: "Saitama", chiba: "Chiba", tokyo: "Tokyo", kanagawa: "Kanagawa"
+            },
+            chubu: {
+                niigata: "Niigata", toyama: "Toyama", ishikawa: "Ishikawa", fukui: "Fukui",
+                yamanashi: "Yamanashi", nagano: "Nagano", gifu: "Gifu",
+                shizuoka: "Shizuoka", aichi: "Aichi"
+            },
+            kinki: {
+                mie: "Mie", shiga: "Shiga", kyoto: "Kyoto", osaka: "Osaka",
+                hyogo: "Hyogo", nara: "Nara", wakayama: "Wakayama"
+            },
+            chugoku: {
+                tottori: "Tottori", shimane: "Shimane", okayama: "Okayama",
+                hiroshima: "Hiroshima", yamaguchi: "Yamaguchi"
+            },
+            shikoku: {
+                tokushima: "Tokushima", kagawa: "Kagawa", ehime: "Ehime", kochi: "Kochi"
+            },
+            kyushu: {
+                fukuoka: "Fukuoka", saga: "Saga", nagasaki: "Nagasaki",
+                kumamoto: "Kumamoto", oita: "Oita", miyazaki: "Miyazaki",
+                kagoshima: "Kagoshima", okinawa: "Okinawa"
+            }
+        };
+
+        const citiesByPrefecture = {
+            hokkaido: ["Sapporo", "Asahikawa", "Hakodate"],
+            aomori: ["Aomori", "Hirosaki", "Hachinohe"],
+            iwate: ["Morioka", "Ichinoseki"],
+            miyagi: ["Sendai", "Ishinomaki"],
+            akita: ["Akita", "Yokote"],
+            yamagata: ["Yamagata", "Tsuruoka"],
+            fukushima: ["Fukushima", "Koriyama"],
+            ibaraki: ["Mito", "Tsukuba"],
+            tochigi: ["Utsunomiya", "Nikko"],
+            gunma: ["Maebashi", "Takasaki"],
+            saitama: ["Saitama", "Kawagoe"],
+            chiba: ["Chiba", "Narita"],
+            tokyo: ["Shinjuku", "Shibuya", "Setagaya", "Tachikawa", "Asakusa"],
+            kanagawa: ["Yokohama", "Kawasaki", "Sagamihara"],
+            niigata: ["Niigata", "Nagaoka"],
+            toyama: ["Toyama", "Takaoka"],
+            ishikawa: ["Kanazawa", "Komatsu"],
+            fukui: ["Fukui", "Tsuruga"],
+            yamanashi: ["Kofu", "Fujiyoshida"],
+            nagano: ["Nagano", "Matsumoto"],
+            gifu: ["Gifu", "Takayama"],
+            shizuoka: ["Shizuoka", "Hamamatsu"],
+            aichi: ["Nagoya", "Toyota"],
+            mie: ["Tsu", "Yokkaichi"],
+            shiga: ["Otsu", "Hikone"],
+            kyoto: ["Kyoto", "Uji"],
+            osaka: ["Osaka", "Sakai"],
+            hyogo: ["Kobe", "Himeji"],
+            nara: ["Nara", "Kashihara"],
+            wakayama: ["Wakayama", "Tanabe"],
+            tottori: ["Tottori", "Yonago"],
+            shimane: ["Matsue", "Izumo"],
+            okayama: ["Okayama", "Kurashiki"],
+            hiroshima: ["Hiroshima", "Fukuyama"],
+            yamaguchi: ["Yamaguchi", "Shimonoseki"],
+            tokushima: ["Tokushima", "Naruto"],
+            kagawa: ["Takamatsu", "Marugame"],
+            ehime: ["Matsuyama", "Niihama"],
+            kochi: ["Kochi", "Nankoku"],
+            fukuoka: ["Fukuoka", "Kitakyushu"],
+            saga: ["Saga", "Karatsu"],
+            nagasaki: ["Nagasaki", "Sasebo"],
+            kumamoto: ["Kumamoto", "Yatsushiro"],
+            oita: ["Oita", "Beppu"],
+            miyazaki: ["Miyazaki", "Nobeoka"],
+            kagoshima: ["Kagoshima", "Kirishima"],
+            okinawa: ["Naha", "Okinawa"]
+        };
+
+        function updatePrefectures() {
+            const regionSelect = document.getElementById("region");
+            const prefectureSelect = document.getElementById("prefecture");
+            const citySelect = document.getElementById("city");
+            const selectedRegion = regionSelect.value;
+
+            prefectureSelect.innerHTML = '<option value="">Select a prefecture</option>';
+            citySelect.innerHTML = '<option value="">Select a prefecture first</option>';
+            citySelect.disabled = true;
+
+            if (selectedRegion && prefecturesByRegion[selectedRegion]) {
+                Object.keys(prefecturesByRegion[selectedRegion]).forEach(prefCode => {
+                    let option = document.createElement("option");
+                    option.value = prefCode;
+                    option.textContent = prefecturesByRegion[selectedRegion][prefCode];
+                    prefectureSelect.appendChild(option);
+                });
+                prefectureSelect.disabled = false;
+            } else {
+                prefectureSelect.disabled = true;
+            }
+        }
+
+        function updateCities() {
+            const prefectureSelect = document.getElementById("prefecture");
+            const citySelect = document.getElementById("city");
+            const selectedPrefecture = prefectureSelect.value;
+
+            citySelect.innerHTML = '<option value="">Select a city</option>';
+
+            if (selectedPrefecture && citiesByPrefecture[selectedPrefecture]) {
+                citiesByPrefecture[selectedPrefecture].forEach(city => {
+                    let option = document.createElement("option");
+                    option.value = city;
+                    option.textContent = city;
+                    citySelect.appendChild(option);
+                });
+                citySelect.disabled = false;
+            } else {
+                citySelect.disabled = true;
+            }
+        }
+        function submitSelection(event) {
+            event.preventDefault(); // Prevent form from reloading the page
+            const region = document.getElementById("region").value;
+            const prefecture = document.getElementById("prefecture").value;
+            const city = document.getElementById("city").value;
+
+            if (!region || !prefecture || !city) {
+                alert("Please select a region, prefecture, and city.");
+            } else {
+                alert(`Selected: ${region} > ${prefecture} > ${city}`);
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script> 
+</body>
+</html>

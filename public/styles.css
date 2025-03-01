@@ -1,0 +1,48 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+form {
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+    margin: 20px;
+    width: 500px;
+}
+.form {
+    display: flex;
+    justify-content: center;
+}
+.title {
+    text-align: center;
+}
+
+.weather-display {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 30px;
+    align-items: center;
+    border: solid black 0.5px;
+    border-radius: 20px;
+    width: fit-content;
+}
+@media screen and (max-width: 500px) {
+    .weather-display {
+        flex-direction: column;
+    }
+}
+
+.weather-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 0.5px;
+    border-radius: 30px;
+    background-color: #87cefa;
+    width: 200px;
+    height: 200px;
+    font-weight: 800;
+}
+

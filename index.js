@@ -1,9 +1,11 @@
 import express from "express";
 import axios from "axios";
 import bodyparser from "body-parser";
+import env from "dotenv";
 
 const app = express();
 const port = 3000;
+env.config();
 
 app.use(express.urlencoded({extended: true}));
 
@@ -15,7 +17,7 @@ app.get("/", (req,res) => {
 
 app.post("/submit-location", async(req,res) => {
     const city = req.body.city;
-    const API_key = "a12d28f418588d925c96ed3758a687b6"
+    const API_key = process.env.API_KEY;
     const date = new Date();
 
     let day = date.getDate();
